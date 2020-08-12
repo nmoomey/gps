@@ -20,9 +20,9 @@
   "lang": "en-US",
   "name": "GPS Logger",
   "orientation": "portrait",
-  "scope": "./",
+  "scope": "/",
   "short_name": "GPS Logger",
-  "start_url": "index.htm",
+  "start_url": "/gps/index.htm",
   "theme_color": "#0099ff",
   "version": "0.1"
 
