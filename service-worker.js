@@ -4,13 +4,12 @@ var cacheVersion = 1;
 var currentCache = {
   offline: 'offline-cache' + cacheVersion
 };
-constant offlineUrl = 'index.htm';
+const offlineURL =  '/gps/','/gps/index.htm','gps/manifest.json','gps/gps_logger_logo.png';
 this.addEventListener('install', event => {
   event.waitUntil(
     caches.open(currentCache.offline).then(function(cache) {
       return cache.addAll([
-          offlineUrl,
-          "manifest.json","gps_logger_logo.png"
+          offlineURL
       ]);
     })
   );
@@ -23,7 +22,7 @@ this.addEventListener('fetch', event => {
         event.respondWith(
           fetch(event.request.url).catch(error => {
               // Return the offline page
-              return caches.match(offlineUrl);
+              return caches.match(offlineURL);
           })
     );
   }
