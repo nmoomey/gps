@@ -7,6 +7,6 @@ Use this URL: https://nmoomey.github.io/gps/
 Save your email address under options and click Export Data to email your data to your office computer
 after you are on-line.
 
-Technologies used: HTML5, local storage, server workers and geolocation.
+Technologies used: HTML5, local storage, server workers, manifest and geolocation.
 
 Neil Moomey
