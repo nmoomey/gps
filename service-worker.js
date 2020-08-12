@@ -4,12 +4,12 @@ var cacheVersion = 1;
 var currentCache = {
   offline: 'offline-cache' + cacheVersion
 };
-var constant offlineUrl = 'index.htm';
+constant offlineUrl = 'index.htm';
 this.addEventListener('install', event => {
   event.waitUntil(
     caches.open(currentCache.offline).then(function(cache) {
       return cache.addAll([
-          offlineURL,
+          offlineUrl,
           "manifest.json","gps_logger_logo.png"
       ]);
     })
