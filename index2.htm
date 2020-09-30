@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style>
+  td {
+     padding:5px;
+  }
+
+  button {
+      font-size:48px;
+  }
+
+  body {
+      font-size:24px;
+  }
+</style>
+<meta charset="utf-8">
+<meta name = "description" content = "GPS Logger">
+<meta name = "application-name" content = "GPS Logger">
+<link rel="icon" type="image/png" href="gps_logger_logo.png" sizes="192x192" />
+<title>GPS Logger Add Waypoint</title>
+</head>
+<body>
+  <div style="text-align:center;">
+  <button type="button" onclick="location.reload();">Add Waypoint</button>
+  </div>  
+  <div style="text-align:center;" id="result">Sorry, I need to wake up.</div>
+  <br/>
+  <div style="text-align:center;" id="footer"></div>
+  <script> 
+	  	  
+    var ts = Date.now();
+    var t = getTime();
+    var id = 0;
+    var index = 0;
+    var lat = 0.0;
+    var lon = 0.0;
+    var gps_logger_array = [];
+    var ls = "";
+    //var waypoint = {id:0,timestamp:Date.now(),datetime:"string",lat:"lat here",lon:"lon here"};
+    var waypoint = {id:0,timestamp:Date.now(),datetime:t,lat:0.000,lon:0.000};
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        lat = Math.round(position.coords.latitude*1000000)/1000000;
+        lon = Math.round(position.coords.longitude*1000000)/1000000;
+        if (localStorage.getItem("gps_logger")) {
+          ls = localStorage.getItem("gps_logger");
+          gps_logger_array = JSON.parse(ls); 
+          index = gps_logger_array.length - 1;
+          id = Number(gps_logger_array[index].id) + 1; //convert to number first 
+          saveData();
+          displayData();
+        }
+        else {
+          saveData();
+        }
+      });
+    }
+
+    function displayData() {
+      var html_table="<table style=\"margin:auto; cellpadding:10px;\">\n";
+      html_table += "<tr><th>ID</th><th>Timestamp</th><th>DateTime</th><th>Latitude</th><th>Longitude</th></tr>\n";
+      for(i=0;i<index;i++) {
+        waypoint = gps_logger_array[i];
+        display_data = "<td>" + waypoint.id + "</td><td>" + waypoint.timestamp + "</td><td>" + waypoint.datetime + "</td><td>" + waypoint.lat + "</td><td>" + waypoint.lon + "</td>"; 
+        html_table += "<tr>" + display_data + "</tr>\n";
+      }
+      html_table += "</table>";
+      document.getElementById("result").innerHTML = html_table;
+    }
+
+    function saveData() {
+      waypoint.id = id + "";
+      waypoint.timestamp = ts;
+      waypoint.datetime = t;
+      waypoint.lat = lat;
+      waypoint.lon = lon;
+      gps_logger_array.push(waypoint);
+      localStorage.setItem("gps_logger",JSON.stringify(gps_logger_array));
+    }
+
+    function getTime() {
+      var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+      var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+      var d = new Date();
+      var day = days[d.getDay()];
+      var hr = d.getHours();
+      if (hr < 10) {
+        hr = "0" + hr
+      }
+      var min = d.getMinutes();
+      if (min < 10) {
+        min = "0" + min;
+      }
+      var sec = d.getSeconds();
+      var day = d.getDate();
+      var month = months[d.getMonth()];
+      var year = d.getFullYear();
+      return  month + " " + day + ", " + year + " " + hr + ":" + min + ":" + sec;
+    }
+
+    function clearData() {
+      localStorage.setItem("gps_logger","");
+      document.getElementById("result").innerHTML = "";
+    }
+
+    function exportData() {
+      var email_address = "youremail@alaska.gov";
+     
+      try {
+        email_address = localStorage.getItem("gps_email");
+		  } catch (exception) {
+        localStorage.setItem("gps_email",email_address);
+      }
+      var gps_logger_array;
+      var id = 0;
+      var waypoint;
+      var data = "\"id\",\"timestamp\",\"datetime\",\"latitude\",\"longitude\"\n";
+
+      if (typeof(Storage) !== "undefined") {
+        gps_logger_array = JSON.parse(localStorage.getItem("gps_logger")); 
+        id = gps_logger_array.length - 1;
+
+  			for(i=0;i<id;i++) {
+	  		  waypoint = gps_logger_array[i];
+          data += "\"" + waypoint.id + "\",\"" + waypoint.timestamp + "\",\"" + waypoint.datetime + "\",\"" + waypoint.lat + "\",\"" + waypoint.lon + "\"\n";
+        }
+        //alert(data);
+        data = encodeURIComponent(data);
+        window.open("mailto:" + email_address + "?subject=GPS Data&body=" + data);
+      }
+    }
+
+    function options() {
+      var email = prompt("Enter default email address:","");
+      localStorage.setItem("gps_email",email);
+    }
+    
+    document.getElementById("footer").innerHTML= "<br/>Last Updated: 6/30/2020 15:20";
+ </script>
+  <div style="text-align:center;">
+  <button type="button" onclick="exportData();">Export Data</button>
+  <button type="button" onclick="options();">Options</button>
+  <button type="button" onclick="clearData();">Clear Data</button>
+  </div>  
+</body>
+</html> 
